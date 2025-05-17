@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Explorer</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .bg-gradient {
+      background: linear-gradient(to bottom right, #1e3a8a, #3730a3, #0284c7);
+    }
+    .icon-bg {
+      opacity: 0.08;
+      position: absolute;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="bg-gradient min-h-screen p-6 text-white relative">
+
+  <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4d6.png"
+       class="icon-bg w-20 top-10 left-10 rotate-12" style="top:2.5rem; left:2.5rem;" />
+  <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4da.png"
+       class="icon-bg w-24 bottom-20 right-16 rotate-45" style="bottom:5rem; right:4rem;" />
+
+  <div class="relative z-10 max-w-4xl mx-auto">
+    <h1 class="text-4xl font-extrabold tracking-tight mb-8 text-center">Book Explorer</h1>
+
+    <div class="flex gap-3 justify-center mb-8 flex-wrap" id="genre-buttons"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="book-list"></div>
+  </div>
+
+  <script>
+    const books = [
+      { id: 1, title: "The Hobbit", genre: "Fantasy" },
+      { id: 2, title: "1984", genre: "Dystopian" },
+      { id: 3, title: "To Kill a Mockingbird", genre: "Classic" },
+      { id: 4, title: "The Great Gatsby", genre: "Classic" },
+      { id: 5, title: "Harry Potter", genre: "Fantasy" },
+      { id: 6, title: "Brave New World", genre: "Dystopian" },
+    ];
+    const genres = ["All", "Fantasy", "Dystopian", "Classic"];
+    let selectedGenre = "All";
+    let favorites = [];
+
+    const genreButtonsDiv = document.getElementById("genre-buttons");
+    const bookListDiv = document.getElementById("book-list");
+
+    const renderGenres = () => {
+      genreButtonsDiv.innerHTML = "";
+      genres.forEach(genre => {
+        const btn = document.createElement("button");
+        btn.textContent = genre;
+        btn.className = `rounded-full px-5 py-2 text-sm font-medium transition backdrop-blur border border-white/20 ${selectedGenre === genre ? "bg-white text-black shadow-xl" : "bg-white/10 hover:bg-white/20"}`;
+        btn.onclick = () => {
+          selectedGenre = genre;
+          renderGenres();
+          renderBooks();
+        };
+        genreButtonsDiv.appendChild(btn);
+      });
+    };
+
+    const renderBooks = () => {
+      const filtered = selectedGenre === "All" ? books : books.filter(book => book.genre === selectedGenre);
+      bookListDiv.innerHTML = "";
+      filtered.forEach(book => {
+        const card = document.createElement("div");
+        card.className = "rounded-xl bg-white/10 backdrop-blur-lg border border-white/10 overflow-hidden shadow-md p-5 relative";
+
+        const favBtn = document.createElement("button");
+        favBtn.className = "absolute top-3 right-3 text-yellow-400 hover:text-yellow-300";
+        favBtn.innerHTML = favorites.includes(book.id) ? "★" : "☆";
+        favBtn.onclick = () => {
+          if (favorites.includes(book.id)) {
+            favorites = favorites.filter(f => f !== book.id);
+          } else {
+            favorites.push(book.id);
+          }
+          renderBooks();
+        };
+
+        card.appendChild(favBtn);
+
+        const title = document.createElement("h2");
+        title.className = "text-lg font-semibold text-white";
+        title.textContent = book.title;
+
+        const genreText = document.createElement("p");
+        genreText.className = "text-xs text-white/70";
+        genreText.textContent = `Genre: ${book.genre}`;
+
+        const img = document.createElement("img");
+        img.src = "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4d8.png";
+        img.className = "w-10 h-10 mt-4 object-contain drop-shadow";
+
+        card.appendChild(title);
+        card.appendChild(genreText);
+        card.appendChild(img);
+
+        bookListDiv.appendChild(card);
+      });
+    };
+
+    renderGenres();
+    renderBooks();
+  </script>
+
+</body>
+</html>
